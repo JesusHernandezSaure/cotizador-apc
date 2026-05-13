@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cotizador Interactivo APC</title>
+    <style>
+        :root {
+            --apc-blue: #002060;
+            --apc-pink: #d81b60;
+        }
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .document-container {
+            background-color: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 25mm 20mm;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            position: relative;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .header img {
+            max-width: 280px;
+            height: auto;
+        }
+        .controls.no-print {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: var(--apc-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .btn:hover { background-color: #001540; }
+        .btn-print { background-color: var(--apc-pink); margin-bottom: 20px; font-weight: bold; font-size: 16px; padding: 12px 24px;}
+        .btn-print:hover { background-color: #ad144d; }
+        .btn-danger { background-color: #dc3545; padding: 6px 10px; }
+        .btn-danger:hover { background-color: #c82333; }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 3fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input[type="text"], input[type="number"], textarea {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: #fafafa;
+        }
+        textarea { resize: vertical; }
+        .intro-text {
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            vertical-align: top;
+        }
+        th {
+            background-color: var(--apc-blue);
+            color: white;
+            font-size: 12px;
+            text-align: left;
+        }
+        .td-inputs input, .td-inputs textarea {
+            border: 1px solid transparent; /* Looks cleaner */
+            background: transparent;
+            padding: 4px;
+            width: 100%;
+        }
+        .td-inputs input:hover, .td-inputs textarea:hover,
+        .td-inputs input:focus, .td-inputs textarea:focus {
+            border: 1px solid #ccc;
+            background: #fff;
+        }
+
+        .totals-container {
+            margin-top: 30px;
+            text-align: right;
+            font-size: 16px;
+        }
+        .totals-row {
+            margin-bottom: 8px;
+        }
+        .totals-row span.label {
+            font-weight: bold;
+            display: inline-block;
+            width: 200px;
+        }
+        .totals-row span.value {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+
+        .spacer {
+            height: 60px;
+        }
+
+        .conditions h4 { margin-bottom: 10px; }
+        .conditions ul {
+            padding-left: 20px;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .sign-off {
+            margin-top: 60px;
+            line-height: 1.5;
+        }
+        .signature {
+            margin-top: 40px;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+            line-height: 1.4;
+        }
+
+        /* Print styles */
+        @media print {
+            body { background-color: white; padding: 0; margin: 0; }
+            .document-container { 
+                box-shadow: none; 
+                width: 100%; 
+                padding: 0; 
+                margin: 0; 
+            }
+            .no-print { display: none !important; }
+            input[type="text"], input[type="number"], textarea {
+                border: none !important;
+                background: transparent !important;
+                padding: 0 !important;
+                resize: none !important;
+                overflow: hidden;
+            }
+            /* Eliminar flechas de los input number al imprimir */
+            input[type="number"]::-webkit-outer-spin-button, 
+            input[type="number"]::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="controls no-print">
+        <button class="btn btn-print" onclick="window.print()">Imprimir / Guardar como PDF</button>
+        <p style="font-size: 12px; color: #666;">Nota: Al hacer clic en "Imprimir", asegúrate de desactivar "Encabezados y pies de página" en los ajustes de impresión para un resultado limpio.</p>
+    </div>
+
+    <div class="document-container">
+        
+        <div class="header">
+            <img src="data:image/webp;base64,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" alt="APC Logo" />
+        </div>
+
+        <div class="info-grid">
+            <div class="left-col">
+                <div class="form-group">
+                    <label>Dirección del Laboratorio / Cliente</label>
+                    <textarea rows="4" placeholder="Ej. Blvd. Adolfo López Mateos 314&#10;Tlacopac, Álvaro Obregón&#10;01049 Ciudad de México, CDMX"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Nombre del cliente (At'n)</label>
+                    <textarea rows="2" placeholder="Lic. Elia Rodríguez&#10;Lic. Mariana Granados"></textarea>
+                </div>
+            </div>
+            <div class="right-col">
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="text" placeholder="Ej. 13 de mayo, 2026">
+                </div>
+                <div class="form-group">
+                    <label>Folio de Cotización (APC-XXXXX-XX)</label>
+                    <input type="text" value="APC-" placeholder="APC-12345-A" oninput="validarFolio(this)">
+                    <small id="folio-error" style="color: red; display: none; font-size: 11px;">El folio debe contener APC- y 5 números.</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="intro-text">
+            <div class="form-group" style="margin-bottom:0;">
+                <textarea rows="2" style="font-size: 16px; border:none; background:transparent;">La presente tiene como fin cotizar a ustedes la creación, desarrollo, redacción, diseño gráfico y edición de [Nombre del Proyecto].</textarea>
+            </div>
+            <p style="margin-top:0;">Se cotiza bajo las siguientes especificaciones:</p>
+        </div>
+
+        <table id="tablaCotizacion">
+            <thead>
+                <tr>
+                    <th style="width: 15%;">CONCEPTO</th>
+                    <th style="width: 35%;">DESCRIPCIÓN</th>
+                    <th style="width: 15%;">PRECIO LISTA</th>
+                    <th style="width: 15%;">PRECIO UNITARIO</th>
+                    <th style="width: 15%;">PRECIO TOTAL</th>
+                    <th class="no-print" style="width: 5%;"></th>
+                </tr>
+            </thead>
+            <tbody id="tbodyCotizacion">
+                <tr class="td-inputs">
+                    <td><textarea rows="3" placeholder="Concepto"></textarea></td>
+                    <td><textarea rows="3" placeholder="Descripción de los entregables..."></textarea></td>
+                    <td>
+                        <div style="display:flex; align-items:center;">
+                            <span>$</span><input type="number" step="0.01" class="calc-lista" placeholder="0.00">
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display:flex; align-items:center;">
+                            <span>$</span><input type="number" step="0.01" class="calc-unitario" placeholder="0.00" oninput="sincronizarFila(this)">
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display:flex; align-items:center;">
+                            <span>$</span><input type="number" step="0.01" class="calc-total" placeholder="0.00" oninput="calcularGranTotal()">
+                        </div>
+                    </td>
+                    <td class="no-print" style="text-align:center;">
+                        <button class="btn btn-danger" onclick="eliminarFila(this)" title="Eliminar fila">X</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="no-print" style="text-align: right; margin-top: 10px;">
+            <button class="btn" onclick="agregarFila()">+ Agregar Concepto</button>
+        </div>
+
+        <div class="totals-container">
+            <div class="totals-row">
+                <span class="label">SUBTOTAL:</span>
+                <span class="value">$ <span id="lblSubtotal">0.00</span></span>
+            </div>
+            <div class="totals-row">
+                <span class="label">IVA (16%):</span>
+                <span class="value">$ <span id="lblIva">0.00</span></span>
+            </div>
+            <div class="totals-row" style="margin-top: 10px; font-size: 18px;">
+                <span class="label">PRECIO TOTAL:</span>
+                <span class="value">$ <span id="lblGranTotal">0.00</span></span>
+            </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="conditions">
+            <h4>Condiciones:</h4>
+            <ul>
+                <li>Tiempo de entrega de acuerdo a la urgencia del cliente y timetable de actividades.</li>
+                <li>Pago conforme a fechas pactadas con el cliente.</li>
+                <li>Cada material será facturado en forma independiente conforme a su fecha de entrega.</li>
+            </ul>
+        </div>
+
+        <div class="sign-off">
+            Sin más por el momento, me pongo a sus órdenes.
+            <div class="signature">
+                Atentamente<br><br>
+                Lic. Esther Luiselli Bacuzzi<br>
+                Director General
+            </div>
+        </div>
+
+        <div class="footer">
+            Altadena No. 27 Col. Nápoles<br>
+            México, D.F. C.P. 03810<br>
+            Tels./Fax: 5682-4176, 5682-4108<br>
+            5682-3770, 5543-5212<br>
+            apcteam@apcpublicidad.com
+        </div>
+
+    </div>
+
+    <script>
+        // Validar Folio APC-XXXXX-
+        function validarFolio(input) {
+            const regex = /^APC-\d{5}-?.*$/;
+            const errorMsg = document.getElementById('folio-error');
+            if (input.value.length > 4 && !regex.test(input.value)) {
+                errorMsg.style.display = 'block';
+            } else {
+                errorMsg.style.display = 'none';
+            }
+        }
+
+        // Agregar nueva fila a la tabla
+        function agregarFila() {
+            const tbody = document.getElementById('tbodyCotizacion');
+            const tr = document.createElement('tr');
+            tr.className = 'td-inputs';
+            tr.innerHTML = `
+                <td><textarea rows="3" placeholder="Concepto"></textarea></td>
+                <td><textarea rows="3" placeholder="Descripción..."></textarea></td>
+                <td>
+                    <div style="display:flex; align-items:center;">
+                        <span>$</span><input type="number" step="0.01" class="calc-lista" placeholder="0.00">
+                    </div>
+                </td>
+                <td>
+                    <div style="display:flex; align-items:center;">
+                        <span>$</span><input type="number" step="0.01" class="calc-unitario" placeholder="0.00" oninput="sincronizarFila(this)">
+                    </div>
+                </td>
+                <td>
+                    <div style="display:flex; align-items:center;">
+                        <span>$</span><input type="number" step="0.01" class="calc-total" placeholder="0.00" oninput="calcularGranTotal()">
+                    </div>
+                </td>
+                <td class="no-print" style="text-align:center;">
+                    <button class="btn btn-danger" onclick="eliminarFila(this)" title="Eliminar fila">X</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+            
+            // Auto-resize textarea magic para las nuevas filas si es necesario
+            tr.querySelectorAll('textarea').forEach(tx => {
+                tx.addEventListener('input', autoResize, false);
+            });
+        }
+
+        // Eliminar fila
+        function eliminarFila(btn) {
+            const row = btn.closest('tr');
+            row.remove();
+            calcularGranTotal();
+        }
+
+        // Si se ingresa el unitario, se copia automáticamente al total de esa fila por defecto
+        function sincronizarFila(inputUnitario) {
+            const row = inputUnitario.closest('tr');
+            const inputTotal = row.querySelector('.calc-total');
+            // Solo sobrescribe si el total está vacío o si el usuario quiere que sea igual (comportamiento base)
+            inputTotal.value = inputUnitario.value;
+            calcularGranTotal();
+        }
+
+        // Calcular la sumatoria de todos los precios totales
+        function calcularGranTotal() {
+            const inputsTotal = document.querySelectorAll('.calc-total');
+            let subtotal = 0;
+            
+            inputsTotal.forEach(input => {
+                const valor = parseFloat(input.value);
+                if (!isNaN(valor)) {
+                    subtotal += valor;
+                }
+            });
+
+            const iva = subtotal * 0.16;
+            const granTotal = subtotal + iva;
+
+            // Formateador de moneda MXN
+            const formatter = new Intl.NumberFormat('es-MX', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+
+            document.getElementById('lblSubtotal').innerText = formatter.format(subtotal);
+            document.getElementById('lblIva').innerText = formatter.format(iva);
+            document.getElementById('lblGranTotal').innerText = formatter.format(granTotal);
+        }
+
+        // Auto-expandir textareas
+        function autoResize() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        }
+        
+        document.querySelectorAll('textarea').forEach(tx => {
+            tx.addEventListener('input', autoResize, false);
+        });
+    </script>
+</body>
+</html>
