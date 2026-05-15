@@ -27,12 +27,6 @@
             margin: 0;
             padding: 20px;
             color: #333;
-            counter-reset: page;
-        }
-
-        /* Numeración de páginas para visualización y PDF */
-        .page-number::after {
-            content: "Página " counter(page);
         }
 
         .document-container {
@@ -91,6 +85,8 @@
             border-radius: 3px;
             width: 100%;
             box-sizing: border-box;
+            resize: none;
+            overflow: hidden;
         }
 
         /* Estilo para el Calendario Desplegable */
@@ -181,15 +177,8 @@
             input, textarea { border: none !important; background: transparent !important; padding: 0 !important; }
             .partida-title-input { border-bottom: none; }
             .btn-danger { display: none; }
-            
-            /* Forzar numeración de página en el pie si el navegador lo permite */
-            .document-container::after {
-                content: counter(page);
-                position: fixed;
-                bottom: 10mm;
-                right: 10mm;
-                font-size: 9pt;
-            }
+            input[type="date"]::-webkit-calendar-picker-indicator { display: none !important; }
+            input[type="date"] { -webkit-appearance: none; appearance: none; }
         }
     </style>
 </head>
@@ -210,7 +199,7 @@
             <div>
                 <div class="form-group">
                     <label>Dirección del Cliente / Prospecto</label>
-                    <textarea rows="3" placeholder="Nombre del Laboratorio&#10;Calle, Colonia, CP&#10;Ciudad, Estado"></textarea>
+                    <textarea rows="3" placeholder="Nombre del Laboratorio&#10;Calle, Colonia, CP&#10;Ciudad, Estado" oninput="autoResize(this)"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Atención a:</label>
@@ -276,6 +265,11 @@
     </div>
 
     <script>
+        function autoResize(el) {
+            el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
+        }
+
         let contadorPartidas = 0;
 
         // Establecer fecha de hoy por defecto
@@ -306,8 +300,8 @@
                     </thead>
                     <tbody class="cuerpo-tabla">
                         <tr class="td-inputs">
-                            <td><textarea rows="2"></textarea></td>
-                            <td><textarea rows="2"></textarea></td>
+                            <td><textarea rows="2" oninput="autoResize(this)"></textarea></td>
+                            <td><textarea rows="2" oninput="autoResize(this)"></textarea></td>
                             <td><input type="number" class="p-lista" step="0.01" oninput="calcularTodo()"></td>
                             <td><input type="number" class="p-unitario" step="0.01" oninput="actualizarFila(this)"></td>
                             <td><input type="number" class="p-total" step="0.01" oninput="calcularTodo()"></td>
@@ -322,6 +316,7 @@
                 </div>
             `;
             container.appendChild(div);
+            div.querySelectorAll('textarea').forEach(autoResize);
             calcularTodo();
         }
 
@@ -331,8 +326,8 @@
             const tr = document.createElement('tr');
             tr.className = 'td-inputs';
             tr.innerHTML = `
-                <td><textarea rows="2"></textarea></td>
-                <td><textarea rows="2"></textarea></td>
+                <td><textarea rows="2" oninput="autoResize(this)"></textarea></td>
+                <td><textarea rows="2" oninput="autoResize(this)"></textarea></td>
                 <td><input type="number" class="p-lista" step="0.01" oninput="calcularTodo()"></td>
                 <td><input type="number" class="p-unitario" step="0.01" oninput="actualizarFila(this)"></td>
                 <td><input type="number" class="p-total" step="0.01" oninput="calcularTodo()"></td>
@@ -341,6 +336,7 @@
                 </td>
             `;
             tbody.appendChild(tr);
+            tr.querySelectorAll('textarea').forEach(autoResize);
         }
 
         function eliminarFila(btn) {
