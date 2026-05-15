@@ -159,6 +159,12 @@
         .conditions { margin-top: 50px; font-size: 12px; border-top: 1px solid #eee; padding-top: 20px; }
         .conditions h4 { margin: 0 0 10px 0; text-transform: uppercase; color: var(--apc-blue); }
         .conditions ul { padding-left: 18px; margin: 0; line-height: 1.5; }
+        .condicion-input {
+            border: none; background: transparent; padding: 2px 0;
+            font-size: 12px; width: calc(100% - 30px); color: inherit;
+            border-radius: 0; font-family: inherit;
+        }
+        .condicion-input:focus { outline: 1px dashed #aaa; }
 
         .footer {
             margin-top: 50px;
@@ -241,12 +247,8 @@
 
         <div class="conditions">
             <h4>Condiciones Comerciales:</h4>
-            <ul>
-                <li>Tiempo de entrega de acuerdo a la urgencia del cliente y timetable de actividades.</li>
-                <li>Pago conforme a fechas pactadas con el cliente.</li>
-                <li>Cada material será facturado en forma independiente conforme a su fecha de entrega.</li>
-                <li>Precios expresados en Moneda Nacional.</li>
-            </ul>
+            <ul id="listaCondiciones"></ul>
+            <button class="btn no-print" style="font-size:11px; padding:5px 10px; margin-top:6px;" onclick="agregarCondicion()">+ Agregar Condición</button>
         </div>
 
         <div style="margin-top: 40px; font-size: 13px;">
@@ -376,6 +378,21 @@
             document.getElementById('valIva').innerText = format.format(iva);
             document.getElementById('valTotal').innerText = format.format(total);
         }
+
+        function agregarCondicion(texto) {
+            const ul = document.getElementById('listaCondiciones');
+            const li = document.createElement('li');
+            li.innerHTML = `<input type="text" class="condicion-input" value="${texto || ''}"><button class="btn-danger no-print" style="margin-left:6px;" onclick="this.closest('li').remove()">x</button>`;
+            ul.appendChild(li);
+        }
+
+        const condicionesDefault = [
+            'Tiempo de entrega de acuerdo a la urgencia del cliente y timetable de actividades.',
+            'Pago conforme a fechas pactadas con el cliente.',
+            'Cada material será facturado en forma independiente conforme a su fecha de entrega.',
+            'Precios expresados en Moneda Nacional.'
+        ];
+        condicionesDefault.forEach(agregarCondicion);
 
         // Iniciar con una partida
         agregarPartida();
