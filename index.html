@@ -224,6 +224,14 @@
             </div>
         </div>
 
+        <div style="margin-bottom: 20px; font-size: 13px; line-height: 2;">
+            <span style="font-weight: bold;">La presente tiene como fin cotizar a:</span>
+            <input type="text" placeholder="Nombre / razón social" style="display:inline; width:auto; min-width:260px; border:none; border-bottom:1px solid #999; border-radius:0; padding:2px 4px; font-size:13px;">
+            <br>
+            <span style="font-weight: bold;">Se cotiza bajo las siguientes especificaciones:</span><br>
+            <textarea rows="2" placeholder="Describe las especificaciones del proyecto..." oninput="autoResize(this)" style="width:100%; border:1px solid #ccc; border-radius:3px; padding:6px; font-size:13px; margin-top:4px;"></textarea>
+        </div>
+
         <div id="contenedorPartidas">
             <!-- Las partidas se generan aquí -->
         </div>
@@ -285,9 +293,8 @@
                     <thead>
                         <tr>
                             <th style="width: 15%;">CONCEPTO</th>
-                            <th style="width: 40%;">DESCRIPCIÓN</th>
-                            <th style="width: 15%;">P. LISTA</th>
-                            <th style="width: 15%;">P. UNITARIO</th>
+                            <th style="width: 50%;">DESCRIPCIÓN</th>
+                            <th style="width: 20%;">P. UNITARIO</th>
                             <th style="width: 15%;">TOTAL</th>
                             <th class="no-print" style="width: 30px; border:none; background:white;"></th>
                         </tr>
@@ -296,7 +303,6 @@
                         <tr class="td-inputs">
                             <td><textarea rows="2" oninput="autoResize(this)"></textarea></td>
                             <td><textarea rows="2" oninput="autoResize(this)"></textarea></td>
-                            <td><input type="number" class="p-lista" step="0.01" oninput="calcularTodo()"></td>
                             <td><input type="number" class="p-unitario" step="0.01" oninput="actualizarFila(this)"></td>
                             <td><input type="number" class="p-total" step="0.01" oninput="calcularTodo()"></td>
                             <td class="no-print" style="border:none; text-align:center;">
@@ -322,7 +328,6 @@
             tr.innerHTML = `
                 <td><textarea rows="2" oninput="autoResize(this)"></textarea></td>
                 <td><textarea rows="2" oninput="autoResize(this)"></textarea></td>
-                <td><input type="number" class="p-lista" step="0.01" oninput="calcularTodo()"></td>
                 <td><input type="number" class="p-unitario" step="0.01" oninput="actualizarFila(this)"></td>
                 <td><input type="number" class="p-total" step="0.01" oninput="calcularTodo()"></td>
                 <td class="no-print" style="border:none; text-align:center;">
