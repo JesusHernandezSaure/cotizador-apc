@@ -3,154 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cotizador Pro APC - Partidas</title>
+    <title>Cotizar Automatizado - APC</title>
     <style>
-        :root {
-            --apc-blue: #002060;
-            --apc-pink: #d81b60;
-            --border-color: #000;
-        }
-        
+        :root { --apc-blue: #002060; --apc-pink: #d81b60; --border-color: #000; }
+
         @page {
-            size: letter;
-            margin: 15mm;
+            size: letter; margin: 15mm;
             @bottom-right {
                 content: "Página " counter(page) " de " counter(pages);
-                font-family: Arial, sans-serif;
-                font-size: 9pt;
+                font-family: Arial, sans-serif; font-size: 9pt;
             }
         }
 
-        body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; }
 
-        .document-container {
-            background-color: white;
-            width: 210mm;
-            min-height: 297mm;
-            margin: 0 auto;
-            padding: 20mm;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            box-sizing: border-box;
-            position: relative;
-        }
+        .document-container { background-color: white; width: 210mm; min-height: 297mm; margin: 0 auto; padding: 20mm; box-shadow: 0 4px 15px rgba(0,0,0,0.1); box-sizing: border-box; position: relative; }
 
         .header { text-align: center; margin-bottom: 30px; }
         .header img { max-width: 250px; height: auto; }
 
-        .controls.no-print {
-            text-align: center;
-            margin-bottom: 20px;
-            position: sticky;
-            top: 10px;
-            z-index: 100;
-        }
+        .controls.no-print { text-align: center; margin-bottom: 20px; position: sticky; top: 10px; z-index: 100; background: #f0f2f5; padding: 8px; border-radius: 8px; }
 
-        .btn {
-            background-color: var(--apc-blue);
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            font-size: 14px;
-            cursor: pointer;
-            border-radius: 4px;
-            margin: 5px;
-            transition: background 0.3s;
-        }
+        .btn { background-color: var(--apc-blue); color: white; border: none; padding: 10px 18px; font-size: 14px; cursor: pointer; border-radius: 4px; margin: 5px; transition: background 0.3s; }
         .btn:hover { background-color: #001540; }
-        .btn-print { background-color: var(--apc-pink); font-weight: bold; padding: 12px 24px; }
-        .btn-add-partida { background-color: #28a745; font-weight: bold; }
-        .btn-danger { background-color: #dc3545; padding: 5px 10px; font-size: 12px; }
+        .btn-print  { background-color: var(--apc-pink); font-weight: bold; padding: 12px 24px; }
+        .btn-add    { background-color: #28a745; font-weight: bold; }
+        .btn-time   { background-color: #6f42c1; font-weight: bold; }
+        .btn-danger { background-color: #dc3545; padding: 5px 10px; font-size: 12px; color: white; border: none; cursor: pointer; border-radius: 3px; }
 
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
+        .info-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; margin-bottom: 25px; }
         .form-group { margin-bottom: 12px; display: flex; flex-direction: column; }
         .form-group label { font-weight: bold; font-size: 11px; margin-bottom: 4px; color: #444; text-transform: uppercase; }
-        
+
         input, textarea {
-            font-family: inherit;
-            font-size: 13px;
-            padding: 7px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            width: 100%;
-            box-sizing: border-box;
-            resize: none;
-            overflow: hidden;
+            font-family: inherit; font-size: 13px; padding: 7px;
+            border: 1px solid #ccc; border-radius: 3px;
+            width: 100%; box-sizing: border-box; resize: none; overflow: hidden;
         }
+        input[type="date"] { cursor: pointer; text-transform: uppercase; }
+        input[type="number"] { overflow: visible; }
 
-        /* Estilo para el Calendario Desplegable */
-        input[type="date"] {
-            cursor: pointer;
-            text-transform: uppercase;
-        }
-
-        .partida-container {
-            margin-top: 30px;
-            border: 1px dashed #ccc;
-            padding: 15px;
-            border-radius: 8px;
-            position: relative;
-        }
+        .partida-container { margin-top: 30px; border: 1px dashed #ccc; padding: 15px; border-radius: 8px; }
         .partida-container:hover { border-color: var(--apc-blue); }
+        .partida-header { display: flex; align-items: center; margin-bottom: 10px; gap: 10px; }
+        .partida-title-input { font-weight: bold; font-size: 15px; color: var(--apc-blue); border: none; border-bottom: 2px solid var(--apc-blue); background: transparent; border-radius: 0; padding: 5px 0; width: 80%; }
 
-        .partida-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            gap: 10px;
-        }
-        .partida-title-input {
-            font-weight: bold;
-            font-size: 15px;
-            color: var(--apc-blue);
-            border: none;
-            border-bottom: 2px solid var(--apc-blue);
-            background: transparent;
-            border-radius: 0;
-            padding: 5px 0;
-            width: 80%;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 10px;
-        }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
         th, td { border: 1px solid var(--border-color); padding: 6px; vertical-align: top; }
-        th {
-            background-color: var(--apc-blue);
-            color: white;
-            font-size: 11px;
-            text-align: center;
-            text-transform: uppercase;
-        }
-        
-        .td-inputs input, .td-inputs textarea {
-            border: none;
-            background: transparent;
-            padding: 2px;
-            font-size: 12px;
-        }
+        th { background-color: var(--apc-blue); color: white; font-size: 11px; text-align: center; text-transform: uppercase; }
 
-        .totals-section {
-            margin-top: 40px;
-            display: flex;
-            justify-content: flex-end;
-        }
-        .totals-table {
-            width: 300px;
-        }
+        .td-inputs input, .td-inputs textarea { border: none; background: transparent; padding: 2px; font-size: 12px; }
+        .p-total-auto { background: #eef2ff !important; color: var(--apc-blue); font-weight: bold; }
+
+        .totals-section { margin-top: 40px; display: flex; justify-content: flex-end; }
+        .totals-table { width: 300px; }
         .totals-table td { border: none; padding: 5px; }
         .totals-table .label { font-weight: bold; text-align: right; font-size: 14px; }
         .totals-table .value { text-align: right; font-weight: bold; font-size: 14px; width: 120px; border-bottom: 1px solid #000; }
@@ -158,23 +64,21 @@
 
         .conditions { margin-top: 50px; font-size: 12px; border-top: 1px solid #eee; padding-top: 20px; }
         .conditions h4 { margin: 0 0 10px 0; text-transform: uppercase; color: var(--apc-blue); }
-        .conditions ul { padding-left: 18px; margin: 0; line-height: 1.5; }
-        .condicion-input {
-            border: none; background: transparent; padding: 2px 0;
-            font-size: 12px; width: calc(100% - 30px); color: inherit;
-            border-radius: 0; font-family: inherit;
-        }
+        .conditions ul { padding-left: 18px; margin: 0; line-height: 1.8; }
+
+        .condicion-input { border: none; background: transparent; padding: 2px 0; font-size: 12px; width: calc(100% - 30px); color: inherit; border-radius: 0; font-family: inherit; }
         .condicion-input:focus { outline: 1px dashed #aaa; }
 
-        .footer {
-            margin-top: 50px;
-            text-align: center;
-            font-size: 10px;
-            color: #666;
-            line-height: 1.3;
+        /* Auto-generated timetable items */
+        #listaCondiciones li[data-auto] {
+            background: #e8f0fe; border-radius: 4px;
+            margin: 3px 0 3px -18px; padding: 3px 6px 3px 14px;
+            list-style: none; border-left: 3px solid var(--apc-blue);
         }
+        #listaCondiciones li[data-auto] .condicion-input { color: var(--apc-blue); }
 
-        /* Ocultar elementos en impresión */
+        .footer { margin-top: 50px; text-align: center; font-size: 10px; color: #666; line-height: 1.3; }
+
         @media print {
             body { background-color: white; padding: 0; }
             .document-container { box-shadow: none; width: 100%; padding: 0; margin: 0; }
@@ -182,21 +86,29 @@
             .partida-container { border: none; padding: 0; }
             input, textarea { border: none !important; background: transparent !important; padding: 0 !important; }
             .partida-title-input { border-bottom: none; }
-            .btn-danger { display: none; }
             input[type="date"]::-webkit-calendar-picker-indicator { display: none !important; }
             input[type="date"] { -webkit-appearance: none; appearance: none; }
+            .p-total-auto { background: transparent !important; font-weight: bold; }
+            #listaCondiciones li[data-auto] {
+                background: transparent !important; border-left: none !important;
+                padding-left: 0 !important; margin-left: 0 !important; list-style: disc !important;
+            }
         }
     </style>
 </head>
 <body>
 
+    <!-- Datalist con catálogo de materiales -->
+    <datalist id="materiales-list"></datalist>
+
     <div class="controls no-print">
         <button class="btn btn-print" onclick="window.print()">GENERAR PDF / IMPRIMIR</button>
-        <button class="btn btn-add-partida" onclick="agregarPartida()">+ CREAR NUEVA PARTIDA</button>
+        <button class="btn btn-add"  onclick="agregarPartida()">+ CREAR NUEVA PARTIDA</button>
+        <button class="btn btn-time" onclick="calcularTiempos()">⏱ CALCULAR TIEMPOS DE ENTREGA</button>
     </div>
 
     <div class="document-container">
-        
+
         <div class="header">
             <img src="data:image/webp;base64,UklGRiInAABXRUJQVlA4WAoAAAAYAAAA1gIAwAAAQUxQSA8UAAABHAVt2zAJf9j7QxARE8Ct828mCIEMNHlLWdo2Q7ZV2Vr22rZt27Y5s2/AHGG0Y18Ah7Y5NI7NbXsvZUQjsyrxR67voCMCEts2kiRFxtbMbnXmt1d3pt/eatvKa2vbtkhAAhKQgAQkIAEJOEACEiIBCZGABCSklMkYfQxIso7jPK+PEhGyIMmO22Yg+qoo3PfwcBCEAH57qK60/6T951+osHAI0pQcHVQYZXim9C5/O79+JpytcY9z/n5J4ywwW5oI5x/QbEk8IrEckZkMyRHaIMZwvEPs4gYYXtYQRLwBw2t/IniHX5EcWR8cB7h9mKxkR5P2aZgZYtJCJf36DxgormH3OQ/i+mnDBsqqXzSEyWcfyupxOQ9WVa+fPJK90F9r50DSsDRlnKv29z51I4gk4iPK/XNs0xgiicqjRgkTmmESH1G0FNMck8iOplB8IolS4Yn4s4pFJ8IoF5yIol5wIoyGJTRJPZomkUlKtAlMkj+rUVySFK3CkkT0CkpY7Xg0+3AqJKlxn3PdvlzQLsMwMktRKUpOwftVQm4X8VBvOZhlk6XkvVMRp6IV3RAvOyl5b1V4aIlaVtRiQy7tl34Wrav1Sz7YafOyIX/JOiT6q3LXoAJmFBFYZFUoTb+K00dDFSVWD9hlVUtWpP3U5BXduHTpnDTOaESyaIlKVtP9pXRs0Bk1ated0LJbpYkBsMWQP+Kz7SbUpzUtsoyyo9DXoU496n5qugz3i+iUukdR/iG9AltVzl9Em6649l0OgE2G/DMcnH9Y3iTTID2MOqNEn4tOxFS1wrKbGesvY8a5eRxTtPbYB7jv7hc4qTID2GVI+P5hiktNmlvScBTv5R5BwPWVkmeW8DClclGl9UGaULP7WDoz/WEs88eo0f8sMD6dTIhb48JODbn25QrGKgJgmyHV/NnvMHaOqxVqGxVryeFj3PfSa6U4aPsY9UE0Fy3EI+UBNE5tuAIxkYpxmHUnuDLWMmL6/BTa63VDbGaGfPdVQ2PMngsodVjibobZdMwY2YFoQngQtSFmNxrhI+g6RJdZRhabV8LfkPc0HAB7DBn09eGfKdKItfkCo9Ek9XAq0C/paSXnesFy57Zy2Bkf/U0cfhIfxHR9vMapZg9C4bxutaRMsjLi9nqnIdd330GSWbTG62ko8zJsEKx0iSV1EUzqrJTaY4WF8H8Tx4y3+iDnyqiIM8cDHOa6lYabQftSHX7bakj5ew+T57jyksFP0BbQDLXALPTq4QWTWbu8DVyCzueRBT2HX6yDl1kKfyuTmNII7dxriPtrD5PnuEZ+BFDt69EO21x4GEdXdMKYvc39xOmLv4NGrh1fgOIioUrQ1sHz0/gl1P3F9vF3kNKnMzJQUJeRWwUqAx6aMQdzPICbgr6OfEHwMo6sqbpoXx5J3syRyLfPnoicDR61DYlLMHs4OsehYZyFDH2CY+LfxDmlP0YlV47vgjcERXPhEdFor11HEwn1ez9TZWOccCgmb6JNQMwPJPpPgjk1PMb4kd7HURSF1M8OHyzCdTdplvrPvYMq7c0IsKYfT+Bujn0X7kWcJNR2I7Sk5oU4lE3YvYKqzVjy62cPYvpURj9wmYh7uDAJiXsN/l1/Nidx0GNkMhT9IoTGJ8jFwQi+3gsbjvzqQUof2N9JQgnpW7D3hAdABr8/w0JL/hY8vU0ej+3gOqe8CoU3lf2dQEZ9Fli4bvnoO6jpk0GRkOZ7+x0UTpc6+M+wcN31COg2rHQzdsRjP4LVryQDlFennZm725D6vRORtGEwKh8U4CVnA/Hm1JeSiBHPoE3dHQ8TXkuVKqgmZm1/gPahn4lRWSacXPXbVdx5A/w7CTfpRz+DPp3uWfxraRR450cSEh/gO++gzM64FB31qqJnmoowyaodryQxG577RUq87cuPkl5LFlR0ha7+AB886Onj74lQFTXVt1V7PaECE96AndOyaAS/5m0mUL+Upzhf++c6WRo+MaR+2kqZDvreQVCfphkfD5y8jcTymVOfIcPUOrD8aXSfqQmbwSLOV3LBOkM5B7ZO3Vtpk8+9g6A+9uY0lIAWs4kqF8P+AJqk+aBAXcDpWJhZ1zcjzPZ6CapGQBhvUd7X2QnpfX7pRFRtqItGxEXkwTqD9L6DkY0iTs+FDlzXBpwyNvciKPbPsTpQIHRESxYTmV24A1ynmU/8TJv2XqTvoFrVvc7+AloJuji9tDGpi+ClrsFepI8+PMyWmewLye7jnG3IJ95BnHnZhrDKVSy2IgFBWYEJy3iU3LFwB19JXa5HRUnnXiSn2regnWXr1zqY27DEkG8dJPUxY5nGUXT9a87erJgRNb3puMoOJ00CRBq32Enbi+TU9jqEa4y6xDBryJ+x+NRBU5+4wQQn0pZDCaSsGfuIT7Gh++FJ/f1aRKemVyCaEheuGoQr2E0kkuWfegdRffoGqszGVqd5eY2BuzzEhu5HI539XZzT/L3ITvUPsVSbXcII4oIpY6chnzkRYRsCKDQr5cKKbLOE5Gv2P9UuVGBEfQax+6GNobgLS2r6vchOHVHnkSs+QqJrW6zcnj8ESQJLjb57/8/02X6oc6Byyi5QXi+m8ixH1hVJN7be1j5JQ7MXjVOzcmGQuIx22jnWuzRyVaemfYa8/x306ZbKiOUMI/H4APwTKNa9OY1Q1fIuycYIrsdeVE69vG5dKL8HRX8wqj7Mpo6CsG7I9w6K+ohzR9ZakCSy4bV4PIFqlbJswbp71D352IIrVLV9BmlW5ZWsvIpfPXbi4qm4fRuVQydCf3+PIZ86iOgT7BvB4uBM384Rh5rhjzV2vZgz5vJrJ7/tVA8NPeNUW1Ot05aJBarkFkplGGCEtf7MgRMSBdamMXZh2WLV/Xr9IJPfYsiX3kFXn7za0QaFIm7nsE0B67Qssut1aUpp1Hh0ITW7R5+HLK8azrtDK2xaBTvSm0yrd0HXDYmfOREtG4L/kWUhJtsyym0QlJsgPAkOvK6YNbCR0x/HEyiWRh6a7Qf2M6rkgqabEqAobouGhC/MPyFR31gq+rqep5mLKyLVqlOTN6DRw6zambGhcJv6GY0u9poqnTkYnb6VX6LezyaUC1gOXYrUrhpXktdl8uKI4PkTlvSG1Oy/Ma+bHK0tH9h+YS81avO+Wi+2/O9I/2SHk98X67/iA1v3xVoqCSF94GMNQejZgJ81oi2+ywWF5IOxPZyuej6idgQ3hIZ8SxZlF+Yj5z5YWc7AX6nKyY2joXMzzuEaY36lKSc2jIPO054XrUOSZac2jIfPoWIUWXZuK37isYTkZPvUpCBIajK7pSjQ2VCTFMtObZ3aMlt9nPcvxPrk3T8Jhi7mtnn+LEmLWTOT1Rtpv+7pSFxKGunZ0e77dbjG9oz5B0BYpq/thYbCEpkIy3oj859wHhIbudbKZ7CDeSL+u+NvOA+FjfwvHD7Ded9XOGzsx392sISENKIAAxYP/bfHH/Eio5FFLFpYjn+D/BnnIaIRGeR/kfwF5yGhUXWUP+E8BJx/ohYXc45Og/FZs+GBjxoxljxmrNcMvqf7rnDI13oi2IXs4RPQSg8/S3XlHJyA8VOL1VjrRM3ELVazwkdrTlygJSrWVRnsOXO5QhPZamytWBVOkO/YKi5I8zSjFyvh2N6A40xGhkq9qtMTatcs+hIqc06N5v3nsf78E5WYzBfVixLu1Gzn7M+bi0EZGi7tkk149Z3Mw8YfYeZJliSPajRrRo2KYrjJa5KZdHF5WfYhjWLFWptV1GFVK6Bh86wgpRoBHOyCIGGlQCoMEi7hgVsFCtLUjA4Po7kYIEbwzvv/M8vPP1GJgw5qBpIUheEwDceC063PmjZQkQ5zQjOCyrbbHbK+u4JoVTyWlBFi1SiW8DTCNn9NOMSFBa1mC7bLbGJh0VrdlioVcwu5qqHIblBZ0j5wHqvPP1GJG2QxOnO41H9ZhCjkMfrMYcKM7wK0nNGxB/AbKD+rJ92OphhF9KBDyjnp06FaEsJMsiUNQ+C2DdI18qnPzSq4vvb7ZzY0HoJjNgTesP2mCyi/I7nZUSr9rpoGS6qUA+a8BU5aHYhidpJuDcoNsIKaXw7KZF3xtqIh4Qvnsfj8E1Xw7L0sjDJOoDckQY0cqMrGNZqLB/EF71z6eKwiLNta4LMMZ7bqtcHrBEfPQ3144AMaaBF1eSLvx7hfETPARKvZeYTfi+pUBAC0CJ0/4qWH5aOBs7h9WBTzCOT50drF6DIdFF4Rz4rZmXknqaCWo+Wc26xivnEea88/UUoVHiwuITq+ze55PtlDo0XKwx00GMKDGULjolKhVaN94KtMi1wAnJeYVXl15ykPy1bGREJlDiknFdDuGnClX/ZR4RK1cWDMYCve2xMW0QyvnkxiQp1EZ5192PWzvCVj2RJa/Mh5LL0GRylG3LSmgSsq1Dtk4RFUAfoQFhoTJTuMkra0Zx130rlOgt2XRjCYrJwv47ykq23DsHpeWueeOQnY26hqSBWEVgH3U4DqvkCLN8d8bl6KldfgKEMsNSiXdOXHqS7tGysZv7yPW7kOzq8bIwZ8oE2H237f3zLvhfmLGgPq1cOy0NV8GcWrdVuqaxuBYgSjbkUJl4DuzYSO0BT4i9jI6cl/7f69hdfgKCbLFTDnEnN/3E2FBx2aYPaRcSFQSWzkylfScy77kWHGLBFOqw0N/BTFzmrCaEsr0QBcyviJIbaRf0BvGQmfCzGF9swLoopeEGiES3rkGH5NzIf5v/Sy7hoc1ZzyBl0X6NHc8oPboFslIHk4JNfP7Dfj5U1jfgGIWv6rJkdJRLrKpNpgGTgOpLnVaPX1PGsvYO2gG7QrhhBQ1DwA9tZFwCP62GMqoQso/GCGctOQL5zHsmtwlNNkGkc93ItjAWhO/QY3c/aiSE28lUM0Zhk0hA4Bm28sbOLSWO8h0hNoWhGcLkPHvN9CI/Bh+QXSIxxOCuzyoXkpVl2Do54q0xFeTKyv2iLTcUHNLhaa3cPtpYmmcdE+1QtEdVTSZj8nML240vd09zE4kCNG+zXpulYH1xV1lvddNA1iZA9AvReA7jVbOUwUiqj70LwUi+aQKEZXA5ub0cRdmqTRRqmFEbZHbBsxy1uDk9ugGThJtEe4KhWVsVtXUeO1qUaIXMUcmF855r2kE09OUIOLZgFErAeUSyQ/GWKATBcvnAUqIarzKGbeKS1fOo81c0h04MWQjpyiG8yzU6Ua0Ke2+zguXZEVvdBpCBqZPCMLoxLWFGaQtD4SZ2mY0Lp9DhKtc3vhgoJfaqKcu1Clj9uvABGEmk44EaiIAYdpsixROz51HkvmkOiAhExAmM5xutE8L2RWB0hFbCN5w9BKv29aPxYF2ECvwsgIV3VVkxXoIqAybkhSclCGhzOdGixAiV19aGkYKNQy1RHBvQZuB5vCq5N6enGGzadeVswh0UQm3XAhkEBeX+jls+JLvhmewcLIbcQMQVTxVCnkJrgZWoDYvfjFdIbxCKsKrLLU8W1khqr3PlRejOClQbq18JLS57gUJHA9NaNLarTFvaelTADMGgC2HAhs+5VzPsfNHG+J2Hmdxc6RP/Y5HQvmkGiCxMwIYOddhB188ikLXvHP6WbYcQVOnLtcb+QIcGKKPWm5DnD6bWXNSGFRwgPPCHd8zIWCslqGaarAshTdtYSTszOD0jfm4LSGxVGk41RfV3Zm+JzfIqBJXkD3j4Pu2td+7XM6xs8h0Yft9KlDfJoZU9uEdVGZoFjGzYhgpt9sRCiVVIazfiW7m6aN8H5qTdRoCnEDqfVyB9U5UfUTE8rUEnk1kNgcxkGx1FPBT33KW6InIyqoIpcRJuXpOaoac2kJQOc68YBobYmqmYjle5/TMXwWq0YO03Be/NBtbT6C4mZJzuyLUHnlYx+K2dqXY5PxRXPFcBtRjq3heJeDxdbCOj9+4bkJ8uDAiUwOibkuBYpXbUQQGM+XRcserDJV2ERegomWM8U0ifzFdUuMnsWqB8UnbU5/TGAlzgRd2ag0TtiAYkefotmH/NmaE9Tc4El1ekb1vGW2jQK6N7lzdeht8WSar6QcY+kLMWeIZJAB0l2lUU1TIXzM5goHRc6ikZlo6fNFPR4y3iGphwB2v5gptly35pNI3/rPKJvFGmCYnfspEgPT5xg71RPq1g0xXmPuYRWmWZ2xlvtFRxO6vb5e8sYoZsBPCjBjQW5ISqcbH7J3Ojl8McQ1TUvOCaKZfhroyV/s1OVnsdo0ifR/dtA5robOYnUj6t1zZn3mwZ5jViSukbNYHekjzK/DDjp3O/5JV38/Gjy2Uei5ZyU2OPr70Qx0dPYcFGaQ5ecd6/1obGXU+Lo6Y/n1nXPcpZF+xC6J671VR/pU3dg9M9EIihUxwo8HFraIr8FY0TrjK3Tz+c2mQQVwjOfFGryo0Jx3zxa0y/DwCMt+rNfP718+nNYiBki86MO4WvP0r4nNQUlCfZ99+fTRnxNQSZK68uLJo4e4JFl9ASYp6goySVXD0eKBJgLVN3r0EJuIVN7oITgRqnoHOhGrNvBEosrgE5nqGglpBkki94X14JufPwSm8s2T3757IHytN8c2hSTh0j6TZwpqzsJtj4NeWXb74I7V82fNFNXkfvUiiCSU07Bth46C6jJ46Z/BcmX3itE9OnUUVYe2jfJDiISFM3NyhVXUfMpvQSY2nN02vV2NvFxx5WRGmAfJYrLKqDvm1wBzSLaNb5IdYrJy0ZXDzndQfX+qSNX/LFY3jtvOLTFnFise55YEmcUK3WX8kz5nscK3EhuCzWLF7sH8NEKxQRqht4//Rvjt47cRhPuUnfQRCPf5es/6cZKA+GC1+0wbkRQ4W9ygVibzAF2hSJh5qK60/6T9J+0//18GHgBWUDggUhIAAJCGAJ0BKtcCwQA+MRiKQ6IhoRF6fTwgAwSzt3C33wd/D/wA+CdGlAPwA0gD8AH8A/AC8+lq/Afkr4g8t+svzv43fln81PLPir707xfkVyeFjeVxzJ/lPyq/uH/////3G/z3qy/Tv/g9wL9Qf7x+Tn9m/////8JnmK/Xz9dPd2/2/7R+6L/L+oB/Yv971o3oFftR6bH/Q/y/7//SV/Z/+f/z/8r7Rn/Z9gD0AP3//gHa/9Gf5n+LX8r/kf8189P8r+PmXYEXdiegPtz3if8b3+IhjKhVcjVvGz+d+oV/JP67/wfzY+ID1+ftl///cW/V0hydkbEYJA3cddXwC2mDbqq46mG3VVx1MNuqrjqYbdCgtT82tOKgNADNZcRyocT+DyeMUnBOiZavnHUw26quOpht1VcdTDbqq46mG3P7JcWO8CzM3DOvz++hSK8L4fzMfJDgyqR3dEoK4fSEoG/9c35IfNY13Q/N6rdShHVFKsxCb9EspuO4JA/p4TR6NPHdPvQWTeVUZKXxafKJyek9em04cxEqM2TJu2eupo2dUskwi0UrNf6OWLnyk2TQJH6XTRcPZbNLRSKKqpWQybeT9b+94CDOAmhyYBVQRUa5ElQWH2XXnyIQlho3swdGgnAtWqnzmmrpRgvgDSQwNLR66sDjAdS94JOiM71y52AVOVodpKffpDmPolzaEQVOu2MZbISNvwZTUgn92LgNCLPZqaFNjHx+FTJJzRx2+1xfGMlAbjJPAbqR5h3zrp56/GeG5sLtkrsHn46GUWwUfOt/fVwIoYQfaWlj89pomBIhI5abbPl+ItpTQS2xSZ3yJ1/yxok0oYqdyhxz3c+kd2sCxkkaYXP2jTyU/5odUmJbNdLc5Uv3HbrSRhMd8leLwoUDf7XYNTAC1XEMp0ylaYpVi5hKZ25CIC8CiKgJs2PDYBktjDd3lfs2/+sOvXOS7lVmg/ZjPjPV58Z5S0JSL4bduokJW2UWfaUd/53PPRTaGPnoM3iU1EXc1uAJuPaIw4gwPCs3E9mQzL7zwirMrUh0ysmZX1hc/537rxc5wMb281dZqMEvTAg52WSlJ5hcPtb2J2lEQuVW+8YO1SdkTmBuEhwM8cyuI6uOtfn6AqJDdN1Ke2LoOz1aeSP7hyN9P1qsp8fA+SJvnCKj6JLX0KbeGgElATiE4iTjMzAn6vtS7YOxWCT+H5ySgnm37AmxjlYrSTtq4Un6WHOg5Lx7eghmZgRHGrgbzV8DBmutxHKoQhOIm0hFp6vH5aJlL2I4kjJ17Cx6M8tdfT53siEpM9H5kYjJ26quOpht1VcdTDbqq46mG3VVx1J6iA0HJWS/CxH6Q94LjhrdWrFlJN6quOpht1VcdTDbqq46mG3VVx1MNuj9ddFInvzBt1VcdTDbqq46mG3VVx1MNuqrjqYbdVXHUw26quOpht1VcdTDbnwAAP65Z3QTK1VQ82nGfCMHxX6j674+0FmJ8vkj+b8tnzoWbc996CoWwAATX6g++/+SHyLdB/Nx+jZSe2Rthp7knIvd7GIpSLhKt9WfXa31VUxC9v5uyX6X6meW+AZjVZVpX96bLHPFpzfO4ct4+e/4+y97E3sIr+zC2f76K0/K6Ya9jeviXDPPsQ67UlBohfNQNMUe9jcfQbmWHXbU79q8kJ0XGiwYg5gSsitQy1ZHM7/PgZApUiUlPs2PREasSYYQLnzs+bN8gqn5rG+JivwsXmtzu52jblX2J/me5hK9x9ehbw//HJQw6zRAV1l0U1dPb/wVs0OYhTByeQ8BtgsapueQlX55MrdH9mtn6bvOciD//B9RgrOf1gNGQi2EVbtif7sXZOm14XZ2ecNBPJ42Nhq2X7fRr/9+AyzQq/vo3bFUaSxAAAF3G5LhkLsR3Ha7zrM3V5kezzYIfxcJ2v430m7/8wWkSV1pDGVhyumvUm1N4G/gx6kFVQ+cFMgQpGbFwe7v8Hn1YZhq6cbJcj6J59cS2dZOWq3k7EhQSSHkkulJXJP4UN0VAQh+Mcy56sSPXrfAMWjzCc7mjrnICmjiDkEVCAURKuH/qdOz9Tod/6nQ7/1Oiw/U6dn6nVV+p0TP9TqI/qdOz9TqT/qdCJ/qdSf9ToEjtM+PfPwICR/62eJyJLwBtaDtcN5SsWwXyDDR0tNq5Xpa30nvOjSzcgcenDBiI/26XlY4CtB4tIM8sEWLqwAGSDUN5UxEmnaFfoX7r6vxfjCtVca+zsgwltZ1upTC6ii/lz83Cc+a70NpzJ4shn/+cdeCgIA8hIQIwT6VE3KlWB+n4zarU0ZJmJEwyUuSRT6QLhZb6mRma+dU3bE3xXO57CRiOdIou0aq0THx+Ub4PtFQJbzrIJqgY9Qq+jXd+1PQww/aauOLqBh3njYlAyb341a1sBKb31jzJ2ZL6Sk6qEh8cnYKqSz9oAoAMIPheQYtPSuIjs17e8bEwZreyUz3+bBDHgIQxRKlzF4sL5WX6vUXtvTwKaqTtgNSBxXn5u9b6ln3f+p0FV+qgvf9VBPH9VGhjB5v6qC0P1UI7/U6MD9VBDigkr0DoQnhM1GYfr6/U44Vkw2DpvRSMaveTLjenbZ0eweKLmoCkMOl5WPAoFRl9JKjxacKIMPkLauuKo6wOQtOnfWDHMwZ1pc+ZfiEeoJoVtSgU38pnZJAIWuSYncj4mI2EAIyuCeJEkQElVk1Qejx2uxqDiNbD9picvLmefknoAhxL8dKXpwQlY5eKEWcWIJ2AMm2oe2CwWzQcEJXFZ3OTx7Q9VZ08altxUad07ScTTCz//jxJTmD7P2Oxl8IDdi4Hb7PprLoC/wbYqESlhoaNyHUy4GiWSFSUJITKOYsGjR6NCUVYUsMbNeBJd+bDG4+FVpM57T1cKODDMb06J63LNTwx2V72A4IAE54Fb59KBJlRPpjB7uf3uS0+yOyturuefAIRZ8Kbenv++MsVx1wtO4iaBq3obyCCLoXCfrXxIw87rMd5ZdHOKs9ttMuT/eLWtSLRb1NDt3BNlgmuhWDs7l3Y8SAXNEEA4Qn7IYSbvl/7JzqjhJeQBWlyhzZgO36nRQf1UGW8iQ39VCxfqdOz9VBAbH6nRQf1Oir7FSQTU/7Ybfp9ni2YhkTE4jDcTnIBadSHWvL3f9bFcqxahdZxYwmnZLqCmxuyxmx7OIwx0ZbT+D/47PiM7uUPEqX5mm3nR0MhzHlC5mZjuSp2TSBj8arUcuZICrsmmh4iMR8INV6ajqgyOJQ4mufmh1sN52f6TqLz8Got9WN/FaYDqpyzhedW4vWe7l7Mx17XHkt+cx4p+mTyIO2BM0HirfwGWPLn9H4dURKkK8lhE62lrxkB4pOgnj1JxF+9htWf/2+o58zvX0ebqXspWbX/i6zSSzDPhiNGw+Wz658PdcN+qzjxgfhjKKBHWsJE+IpNB64GOwROEV4nTEYdkAf/+ty/sUPNyxw6A8Q1F7iX9hclAGeW/q/9+M+9sEdrgUSN+qgyPkXXv9VBAJH+qgp/o/TOtBcIXI8CGi5qQJF/zoszKtzJ3CKKGC1pZd+ael+bRzw6om4mOakdxBmHVE58BlGAJOqt7+3nm3YjSFPZAQdifOZl0A+X8gGLfThHI7UkTlaHY2COZuKzuirU+6/nxKCtLOAzzgu2JBAtzXjEedBAtx46hxo4Be0xFMJe+FKRRzS7gUmZXePKVFZvbPeVLZSeFCPH9jHSZm+B/gcMLU85Rb9UtrDRRFBn85+c0OygETXo+MQ8wy5m6adVZhHro+sb7uAfXe0oGvJELu1Nx2RLdnKoY5E9kngd2gq9LiA0RZDtkMt8gBeGjFVNALVuqhU7LYu0MA0G3zaVEo8o3uHYROR88QHfAIwHqEptmTkRpPR7EERumxx6smBREB2B6a/akodk3ZdHH2flRQ4+964lYi9eZolmed0IhWODINHSGNvIZkLSRlL6FPWygOAPmyzYujifJIFdUCfp69dY5RR1UM6TG8I4RFDI+wq8dFyE4fMUjB3VJi4Wtnvk1wuQcP46AGXQo72/RtIBoy7cNa4f/+HX/4AEZ1ZpEFSW8NiU4hn2p75HwiCOSs5NmPUXX/khicjfX+pwRIJa6Jyl/9OvJgYOAgvWRJDVp8jaq35h7Ak3az3tHta9DsPoi6ksxpOUM/X9PhYOwPK2ecDbsE2seDtlFzMUMDSuQeuwhwJF/s2C8rfjm+7+3qmznXVtaYRyQX4cinRsE2dWOX3ZAQeaPkN5lDzKgviUj0eAUqqlxTNfmh0bFMUe7JKLLCsce10UVCCNqVIpf0vJamqe/4oIWPNECj1jneLatU4lOVOMXeMj5hJoemntzHF2smTSuMlvzzx8+3Gt5zG2J84rbiaZh/0eu7rzYRNa522O/ZvOMHpYOstgqrz+QgW5rx6/we4GzslGsLCBbmvHr9WuR++zZZ92JM4hee3vpYXnt75Z4gp0j5uTkAdpI60Ymh6xYf5UWDz9xW3nM0w9X/ZE59uvB+wnKJD+fqA5oIRlXih4SK5BQEsuarZ54XC7abqTsqYdoH0Nqs846Peli+MqXJtvFYnVHwSltDUiym172zvcdsMBM52oUdfgbry4fz7Fm8FH5Gn9E1uR4eTosjkCbXIXG2RsLxbACUmKLikYVMOgpKUzXOutM6+gg2qpMp1w2ysvjZsDDaCNtcQuuGCi+wdjJEW6qELh4vgo71VBmFwBw9/TBNgfAYHUoj4H6lWpdPzsvYXDue4xnOUMLiaDFIrAslfHy5BXA+OB/nXTgM9nuy9Gsh5oOS5J8uBiHJQqkfeY0DbFPEZumPYPCIU7mgfUtsVsc0Be+SL9135zBVGHrqTh5nHEKZ2nKo3SkIkIphWp7165KUFHHDZ8k/uuSPpB1bKY0x/d+qmNrRTcrr3TfCbd3nOPmj/BSeS9NzrIFYBQI5eporS0XXhhHyC3LMTcY4N6eiSXxaw5XULNw2OhGiQnJBfM9XwkIcPcjj9H7xGQhc/9+8OlP0Z8cZWbxaRDBfnULzgXDX6h0RT00iFTaYiMK3MPa6j5o3hsrqSWInm+KUR0uu3fTPsqLs4FU3X+QqWckgnfg4OmxoQ7Keuq23eQ6C1s2+D/7c2DcgiQA0F8f+nVqUjudi+hVRWb4K7XWnR6fHeS+ZlmBXO/t6cgiiEAk6nPJ7EiuOU1UOrdwNYUD5NDsb24lj2L47qdPC4rR28MZ5o8cSfr2jtmB3/GUWNyeyH2MSs4+254Nj0ex3VSm4F6pdSx7xBQAZhrPKkpZH0uYyW9xg7GrveAc3j2sQ6qmBAX2kRFlESCByiByXD3BjGUbyPSDqGlfdQTTTdJpb049Pi54TPJU8JXbHRmOITfczJ9SjatNvD2CGFOl8jBbjBHc0gLvBKjkWUd398nx12VnYn7qBLXA2O9QEsXYriuAVeqdH7llWDYYiLI3XNN3MOVKmGWB7pSOfouA5el88jp3Z7nf/sPeeJRWG6IrzxZa/ONH+TyavNUkNSxMaV/tAMovAmJ8kjeS/mCw7HAP/y9Ms+hAKLxoD0Q8AADfWSWR1SE3LtCijWNIQbyg7+ohIFRX0vjWAkL7IGfNNOpHmF56ZlE+GqmnA6HOLO3s8ETxIeQf09mHL5q8/BqN5Mm6EG9coo0QwMrXLwAA3ReikhxfxFtzHw8fRCsLMOYcvvm5BiAjWJkRCbXnkb7u4SGf46EYHVecdQ2K06iAjANWIjAInXfJIXip6IoKdQ2Tp0hBvoFikR1OFWZt36kL7IGfNm77XB8dx00XK8PZ54/nTTzzIWOdR5O87wmfWqAfvHt1KVh9q/Kcqoo8IzM75yaPEXE6IILkx/hOCe5+BLmV/sbgQ84w/lYlMSsBOkIGZKlLE3Lvs+vMwralPCvfw3juaPKv8lKdE5wQxFACIgGyak+g3MitROEJksNuVrrN/pHMrPLIoXG1vr/3sMD5jaDU7kCw0+UviOLLm3cxvy3A6mI5nAKKretLPHg6fxZIgIR7fe+GLGKG7gUw/I6DCJAfdAmekxQGfSbxMMSLLCHJxmoNfh3ADRPwJoHG46x+I+kG1wxye2acVGCGzYyTVKNjPz75d6telPUcAAAAAAG0M3jEOWpkDe71oyI6i5jkRVCvppBoWRtpdIJM1futzlgGUFo7Pw5ai5qCOKTUydZHbbC7Xe/HZu08ExyDAgguubaLrIfSS8U8KEhNl0VwY2mDISADiNTtEhooigz+czn0znfelYLc15+fNbwl2cVA38PAAAAAAAAAAAAAAAAABFWElGkgAAAElJKgAIAAAAAwASAQMAAQAAAAEAAAAxAQIABwAAADIAAABphwQAAQAAADoAAAAAAAAAUGljYXNhAAAEAACQBwAEAAAAMDIyMAKgBAABAAAA1wIAAAOgBAABAAAAwQAAACCkAgAhAAAAcAAAAAAAAABjNjI3ZTUwYmY3NDEyMDQyMDAwMDAwMDAwMDAwMDAwMAAA" alt="APC Logo" />
         </div>
@@ -224,17 +136,15 @@
             </div>
         </div>
 
-        <div style="margin-bottom: 20px; font-size: 13px; line-height: 2;">
-            <span style="font-weight: bold;">La presente tiene como fin cotizar a:</span>
-            <input type="text" placeholder="Nombre / razón social" style="display:inline; width:auto; min-width:260px; border:none; border-bottom:1px solid #999; border-radius:0; padding:2px 4px; font-size:13px;">
+        <div style="margin-bottom:20px; font-size:13px; line-height:2;">
+            <span style="font-weight:bold;">La presente tiene como fin cotizar a:</span>
+            <input type="text" placeholder="Nombre / razón social" style="display:inline; width:auto; min-width:260px; border:none; border-bottom:1px solid #999; border-radius:0; padding:2px 4px; font-size:13px; overflow:visible;">
             <br>
-            <span style="font-weight: bold;">Se cotiza bajo las siguientes especificaciones:</span><br>
+            <span style="font-weight:bold;">Se cotiza bajo las siguientes especificaciones:</span><br>
             <textarea rows="2" placeholder="Describe las especificaciones del proyecto..." oninput="autoResize(this)" style="width:100%; border:1px solid #ccc; border-radius:3px; padding:6px; font-size:13px; margin-top:4px;"></textarea>
         </div>
 
-        <div id="contenedorPartidas">
-            <!-- Las partidas se generan aquí -->
-        </div>
+        <div id="contenedorPartidas"></div>
 
         <div class="totals-section">
             <table class="totals-table">
@@ -251,7 +161,7 @@
             <button class="btn no-print" style="font-size:11px; padding:5px 10px; margin-top:6px;" onclick="agregarCondicion()">+ Agregar Condición</button>
         </div>
 
-        <div style="margin-top: 40px; font-size: 13px;">
+        <div style="margin-top:40px; font-size:13px;">
             Sin más por el momento, me pongo a sus órdenes.<br><br>
             <strong>Atentamente,</strong><br><br><br>
             <strong>Lic. Esther Luiselli Bacuzzi</strong><br>
@@ -264,130 +174,288 @@
             <strong>apcteam@apcpublicidad.com</strong>
         </div>
 
-    </div>
+    </div><!-- /document-container -->
 
     <script>
-        function autoResize(el) {
-            el.style.height = 'auto';
-            el.style.height = el.scrollHeight + 'px';
-        }
+    // ══════════════════════════════════════════════
+    //  CATÁLOGO TIMETABLE
+    // ══════════════════════════════════════════════
+    const TIMETABLE = [
+        // ── Estándar ─────────────────────────────
+        { nombre: 'Debrief',                        grupo: 'Estándar',   cliente: '10 días hábiles',            dias: 10  },
+        { nombre: 'Concepto Creativo',              grupo: 'Estándar',   cliente: 'A definir con el equipo',    dias: null },
+        { nombre: 'Ayuda visual 4 páginas',         grupo: 'Estándar',   cliente: '4 días hábiles',             dias: 4   },
+        { nombre: 'Ayuda visual 6 páginas',         grupo: 'Estándar',   cliente: '5 días hábiles',             dias: 5   },
+        { nombre: 'Ayuda visual 8 páginas',         grupo: 'Estándar',   cliente: '7 días hábiles',             dias: 7   },
+        { nombre: 'Ayuda visual 12 páginas',        grupo: 'Estándar',   cliente: '10 días hábiles',            dias: 10  },
+        { nombre: 'Monografía 24 páginas',          grupo: 'Estándar',   cliente: '15 días hábiles',            dias: 15  },
+        { nombre: 'Manual de capacitación',         grupo: 'Estándar',   cliente: '8 días hábiles',             dias: 8   },
+        { nombre: 'Manejo de objeciones',           grupo: 'Estándar',   cliente: '8 días hábiles',             dias: 8   },
+        { nombre: 'Folder',                         grupo: 'Estándar',   cliente: '3 días hábiles',             dias: 3   },
+        { nombre: 'Díptico',                        grupo: 'Estándar',   cliente: '3 días hábiles',             dias: 3   },
+        { nombre: 'Tríptico',                       grupo: 'Estándar',   cliente: '3 días hábiles',             dias: 3   },
+        { nombre: 'Whatsapp',                       grupo: 'Estándar',   cliente: '1 día hábil',                dias: 1   },
+        { nombre: 'GIF',                            grupo: 'Estándar',   cliente: '1 día hábil',                dias: 1   },
+        { nombre: 'Video 1 minuto',                 grupo: 'Estándar',   cliente: '2 días hábiles',             dias: 2   },
+        { nombre: 'Video 3 minutos',                grupo: 'Estándar',   cliente: '2 días hábiles',             dias: 2   },
+        { nombre: 'Video 5 minutos',                grupo: 'Estándar',   cliente: '3 días hábiles',             dias: 3   },
+        { nombre: 'Testimonial',                    grupo: 'Estándar',   cliente: '5 días hábiles',             dias: 5   },
+        { nombre: 'Video con grabación in situ',    grupo: 'Estándar',   cliente: '4–5 días hábiles',           dias: 5   },
+        { nombre: 'Tarjetón 2p',                    grupo: 'Estándar',   cliente: '2 días hábiles',             dias: 2   },
+        { nombre: 'Infografía',                     grupo: 'Estándar',   cliente: '3 días hábiles',             dias: 3   },
+        { nombre: 'Mailing',                        grupo: 'Estándar',   cliente: '2 días hábiles',             dias: 2   },
+        { nombre: 'Attach para mailing',            grupo: 'Estándar',   cliente: '2 días hábiles',             dias: 2   },
+        { nombre: 'Cambios simples de materiales',  grupo: 'Estándar',   cliente: 'Inmediato / hasta 1 día',    dias: 1   },
+        { nombre: 'Cambios complejos de materiales',grupo: 'Estándar',   cliente: 'Hasta 2 días hábiles',       dias: 2   },
+        // ── Especiales ───────────────────────────
+        { nombre: 'Parrilla',                       grupo: 'Especiales', cliente: 'Entrega días 15 del mes',    dias: null },
+        { nombre: 'Blog',                           grupo: 'Especiales', cliente: '2 blogs por día',            dias: null },
+        { nombre: 'Corrección de parrilla',         grupo: 'Especiales', cliente: '1 día hábil máximo',         dias: 1   },
+        { nombre: 'Corrección de post',             grupo: 'Especiales', cliente: 'Inmediato',                  dias: 0   },
+        { nombre: 'Re-edición de post simple',      grupo: 'Especiales', cliente: '1 día hábil',                dias: 1   },
+        { nombre: 'Re-edición de post complejo',    grupo: 'Especiales', cliente: '2 días hábiles',             dias: 2   },
+        { nombre: 'Producción de parrilla',         grupo: 'Especiales', cliente: 'Dentro del mes, días 15',    dias: null },
+    ];
 
-        let contadorPartidas = 0;
+    // Poblar datalist
+    const dl = document.getElementById('materiales-list');
+    TIMETABLE.forEach(m => {
+        const o = document.createElement('option');
+        o.value = m.nombre;
+        dl.appendChild(o);
+    });
 
-        // Establecer fecha de hoy por defecto
-        document.getElementById('fechaCot').valueAsDate = new Date();
+    // ══════════════════════════════════════════════
+    //  UTILS
+    // ══════════════════════════════════════════════
+    function autoResize(el) {
+        el.style.height = 'auto';
+        el.style.height = el.scrollHeight + 'px';
+    }
 
-        function agregarPartida() {
-            contadorPartidas++;
-            const container = document.getElementById('contenedorPartidas');
-            const div = document.createElement('div');
-            div.className = 'partida-container';
-            div.id = 'partida-' + contadorPartidas;
-            
-            div.innerHTML = `
-                <div class="partida-header">
-                    <input type="text" class="partida-title-input" placeholder="NOMBRE DE LA PARTIDA (Ej. PARTIDA I. EVENTO)" value="PARTIDA ${contadorPartidas}. ">
-                    <button class="btn btn-danger no-print" onclick="eliminarPartida(${contadorPartidas})">Eliminar Partida</button>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 15%;">CONCEPTO</th>
-                            <th style="width: 50%;">DESCRIPCIÓN</th>
-                            <th style="width: 20%;">P. UNITARIO</th>
-                            <th style="width: 15%;">TOTAL</th>
-                            <th class="no-print" style="width: 30px; border:none; background:white;"></th>
-                        </tr>
-                    </thead>
-                    <tbody class="cuerpo-tabla">
-                        <tr class="td-inputs">
-                            <td><textarea rows="2" oninput="autoResize(this)"></textarea></td>
-                            <td><textarea rows="2" oninput="autoResize(this)"></textarea></td>
-                            <td><input type="number" class="p-unitario" step="0.01" oninput="actualizarFila(this)"></td>
-                            <td><input type="number" class="p-total" step="0.01" oninput="calcularTodo()"></td>
-                            <td class="no-print" style="border:none; text-align:center;">
-                                <button class="btn-danger" onclick="eliminarFila(this)">x</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="no-print" style="text-align:right;">
-                    <button class="btn" style="font-size:11px; padding:5px 10px;" onclick="agregarFila(${contadorPartidas})">+ Añadir Fila</button>
-                </div>
-            `;
-            container.appendChild(div);
-            div.querySelectorAll('textarea').forEach(autoResize);
+    let contadorPartidas = 0;
+    document.getElementById('fechaCot').valueAsDate = new Date();
+
+    // ══════════════════════════════════════════════
+    //  PLANTILLA DE CELDAS
+    // ══════════════════════════════════════════════
+    function crearCeldas() {
+        return [
+            '<td><input type="text" class="material-input" list="materiales-list" placeholder="Buscar material..."></td>',
+            '<td><textarea rows="2" oninput="autoResize(this)"></textarea></td>',
+            '<td><input type="number" class="p-cantidad" value="1" min="1" step="1" oninput="actualizarFilaAuto(this)"></td>',
+            '<td><input type="number" class="p-unitario" step="0.01" placeholder="0.00" oninput="actualizarFilaAuto(this)"></td>',
+            '<td><input type="number" class="p-total p-total-auto" step="0.01" placeholder="0.00" oninput="calcularTodo()"></td>',
+            '<td class="no-print" style="border:none;text-align:center;vertical-align:middle;">',
+            '  <button class="btn-danger" onclick="eliminarFila(this)">x</button>',
+            '</td>'
+        ].join('');
+    }
+
+    // ══════════════════════════════════════════════
+    //  PARTIDAS
+    // ══════════════════════════════════════════════
+    function agregarPartida() {
+        contadorPartidas++;
+        const container = document.getElementById('contenedorPartidas');
+        const div = document.createElement('div');
+        div.className = 'partida-container';
+        div.id = 'partida-' + contadorPartidas;
+        div.innerHTML =
+            '<div class="partida-header">' +
+                '<input type="text" class="partida-title-input" placeholder="NOMBRE DE LA PARTIDA" value="PARTIDA ' + contadorPartidas + '. ">' +
+                '<button class="btn btn-danger no-print" onclick="eliminarPartida(' + contadorPartidas + ')">Eliminar Partida</button>' +
+            '</div>' +
+            '<table>' +
+                '<thead><tr>' +
+                    '<th style="width:28%;">MATERIAL</th>' +
+                    '<th style="width:32%;">DESCRIPCIÓN</th>' +
+                    '<th style="width:8%;">CANT.</th>' +
+                    '<th style="width:16%;">P. UNITARIO</th>' +
+                    '<th style="width:16%;">TOTAL</th>' +
+                    '<th class="no-print" style="width:30px;border:none;background:white;"></th>' +
+                '</tr></thead>' +
+                '<tbody class="cuerpo-tabla">' +
+                    '<tr class="td-inputs">' + crearCeldas() + '</tr>' +
+                '</tbody>' +
+            '</table>' +
+            '<div class="no-print" style="text-align:right;">' +
+                '<button class="btn" style="font-size:11px;padding:5px 10px;" onclick="agregarFila(' + contadorPartidas + ')">+ Añadir Fila</button>' +
+            '</div>';
+        container.appendChild(div);
+        div.querySelectorAll('textarea').forEach(autoResize);
+        calcularTodo();
+    }
+
+    function agregarFila(partidaId) {
+        const partida = document.getElementById('partida-' + partidaId);
+        const tbody = partida.querySelector('.cuerpo-tabla');
+        const tr = document.createElement('tr');
+        tr.className = 'td-inputs';
+        tr.innerHTML = crearCeldas();
+        tbody.appendChild(tr);
+        tr.querySelectorAll('textarea').forEach(autoResize);
+    }
+
+    function eliminarFila(btn) {
+        btn.closest('tr').remove();
+        calcularTodo();
+    }
+
+    function eliminarPartida(id) {
+        if (confirm('¿Deseas eliminar esta partida completa?')) {
+            document.getElementById('partida-' + id).remove();
             calcularTodo();
         }
+    }
 
-        function agregarFila(partidaId) {
-            const partida = document.getElementById('partida-' + partidaId);
-            const tbody = partida.querySelector('.cuerpo-tabla');
-            const tr = document.createElement('tr');
-            tr.className = 'td-inputs';
-            tr.innerHTML = `
-                <td><textarea rows="2" oninput="autoResize(this)"></textarea></td>
-                <td><textarea rows="2" oninput="autoResize(this)"></textarea></td>
-                <td><input type="number" class="p-unitario" step="0.01" oninput="actualizarFila(this)"></td>
-                <td><input type="number" class="p-total" step="0.01" oninput="calcularTodo()"></td>
-                <td class="no-print" style="border:none; text-align:center;">
-                    <button class="btn-danger" onclick="eliminarFila(this)">x</button>
-                </td>
-            `;
-            tbody.appendChild(tr);
-            tr.querySelectorAll('textarea').forEach(autoResize);
+    // ══════════════════════════════════════════════
+    //  CÁLCULO DE PRECIOS  (CANT × P. UNITARIO)
+    // ══════════════════════════════════════════════
+    function actualizarFilaAuto(input) {
+        const row = input.closest('tr');
+        const cantidad  = parseFloat(row.querySelector('.p-cantidad').value)  || 0;
+        const unitario  = parseFloat(row.querySelector('.p-unitario').value)  || 0;
+        const totalInput = row.querySelector('.p-total');
+        if (cantidad > 0 && unitario > 0) {
+            totalInput.value = (cantidad * unitario).toFixed(2);
         }
+        calcularTodo();
+    }
 
-        function eliminarFila(btn) {
-            btn.closest('tr').remove();
-            calcularTodo();
-        }
+    function calcularTodo() {
+        let subtotal = 0;
+        document.querySelectorAll('.p-total').forEach(inp => {
+            subtotal += parseFloat(inp.value) || 0;
+        });
+        const fmt = new Intl.NumberFormat('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('valTotal').innerText = fmt.format(subtotal);
+    }
 
-        function eliminarPartida(id) {
-            if(confirm('¿Deseas eliminar esta partida completa?')) {
-                document.getElementById('partida-' + id).remove();
-                calcularTodo();
+    // ══════════════════════════════════════════════
+    //  CÁLCULO DE TIEMPOS → CONDICIONES
+    // ══════════════════════════════════════════════
+    function calcularTiempos() {
+        const ul = document.getElementById('listaCondiciones');
+
+        // Eliminar condiciones auto-generadas previas
+        ul.querySelectorAll('[data-auto]').forEach(li => li.remove());
+
+        // Recolectar materiales de todas las partidas
+        const grouped = {};
+        document.querySelectorAll('.material-input').forEach(input => {
+            const nombre = input.value.trim();
+            if (!nombre) return;
+            const mat = TIMETABLE.find(m => m.nombre === nombre);
+            if (!mat) return;
+            const row      = input.closest('tr');
+            const cantidad = parseInt(row.querySelector('.p-cantidad').value) || 1;
+            if (grouped[nombre]) {
+                grouped[nombre].cantidad += cantidad;
+            } else {
+                grouped[nombre] = { mat, cantidad };
             }
+        });
+
+        const entries = Object.values(grouped);
+        if (entries.length === 0) {
+            alert('No se encontraron materiales del catálogo.\nEscribe el nombre exacto o selecciónalo de la lista desplegable.');
+            return;
         }
 
-        function actualizarFila(inputUnit) {
-            const row = inputUnit.closest('tr');
-            const totalInput = row.querySelector('.p-total');
-            // Por defecto el total es el unitario (asumiendo cantidad 1)
-            totalInput.value = inputUnit.value;
-            calcularTodo();
+        // Ordenar de mayor a menor tiempo estimado
+        entries.sort((a, b) => {
+            const tA = (a.mat.dias !== null) ? a.mat.dias * a.cantidad : -1;
+            const tB = (b.mat.dias !== null) ? b.mat.dias * b.cantidad : -1;
+            return tB - tA;
+        });
+
+        // Calcular ruta crítica (máx de tiempos por tipo, asumiendo equipos en paralelo)
+        let maxDias = 0;
+        entries.forEach(({ mat, cantidad }) => {
+            if (mat.dias !== null && mat.dias > 0) {
+                const total = mat.dias * cantidad;
+                if (total > maxDias) maxDias = total;
+            }
+        });
+
+        // Construir ítems (se insertarán al inicio de la lista en orden inverso)
+        const items = [];
+
+        // Cabecera
+        items.push({ txt: 'TIEMPOS DE ENTREGA ESTIMADOS:', bold: true });
+
+        // Por material
+        entries.forEach(({ mat, cantidad }) => {
+            let txt;
+            if (mat.dias !== null && mat.dias > 0) {
+                const totalDias = mat.dias * cantidad;
+                txt = cantidad > 1
+                    ? mat.nombre + ' (' + cantidad + ' pzs.): ' + totalDias + ' días hábiles'
+                    : mat.nombre + ': ' + mat.cliente;
+            } else {
+                txt = mat.nombre + ': ' + mat.cliente;
+            }
+            items.push({ txt: '• ' + txt, bold: false });
+        });
+
+        // Resumen
+        if (maxDias > 0) {
+            items.push({ txt: '⏱ Tiempo total estimado del proyecto: ' + maxDias + ' días hábiles (producción en paralelo por equipo)', bold: true });
         }
 
-        function calcularTodo() {
-            const totales = document.querySelectorAll('.p-total');
-            let subtotal = 0;
-            totales.forEach(input => {
-                const val = parseFloat(input.value) || 0;
-                subtotal += val;
-            });
+        // Insertar al inicio de la lista (en orden inverso para que queden bien)
+        const ancla = ul.firstChild;
+        items.reverse().forEach(({ txt, bold }) => {
+            const li  = document.createElement('li');
+            li.setAttribute('data-auto', 'true');
+            const inp = document.createElement('input');
+            inp.type  = 'text';
+            inp.className = 'condicion-input';
+            inp.value = txt;
+            if (bold) inp.style.fontWeight = 'bold';
+            const btn = document.createElement('button');
+            btn.className = 'btn-danger no-print';
+            btn.style.marginLeft = '6px';
+            btn.textContent = 'x';
+            btn.onclick = function() { this.closest('li').remove(); };
+            li.appendChild(inp);
+            li.appendChild(btn);
+            ul.insertBefore(li, ancla);
+        });
+    }
 
-            const format = new Intl.NumberFormat('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            document.getElementById('valTotal').innerText = format.format(subtotal);
-        }
+    // ══════════════════════════════════════════════
+    //  CONDICIONES MANUALES
+    // ══════════════════════════════════════════════
+    function agregarCondicion(texto) {
+        const ul = document.getElementById('listaCondiciones');
+        const li = document.createElement('li');
+        const inp = document.createElement('input');
+        inp.type = 'text';
+        inp.className = 'condicion-input';
+        inp.value = texto || '';
+        const btn = document.createElement('button');
+        btn.className = 'btn-danger no-print';
+        btn.style.marginLeft = '6px';
+        btn.textContent = 'x';
+        btn.onclick = function() { this.closest('li').remove(); };
+        li.appendChild(inp);
+        li.appendChild(btn);
+        ul.appendChild(li);
+    }
 
-        function agregarCondicion(texto) {
-            const ul = document.getElementById('listaCondiciones');
-            const li = document.createElement('li');
-            li.innerHTML = `<input type="text" class="condicion-input" value="${texto || ''}"><button class="btn-danger no-print" style="margin-left:6px;" onclick="this.closest('li').remove()">x</button>`;
-            ul.appendChild(li);
-        }
+    const condicionesDefault = [
+        'Agregar el 16% de IVA.',
+        'Tiempo de entrega de acuerdo a la urgencia del cliente y timetable de actividades.',
+        'Pago conforme a fechas pactadas con el cliente.',
+        'Cada material será facturado en forma independiente conforme a su fecha de entrega.',
+        'Precios expresados en Moneda Nacional.'
+    ];
+    condicionesDefault.forEach(agregarCondicion);
 
-        const condicionesDefault = [
-            'Agregar el 16% de IVA.',
-            'Tiempo de entrega de acuerdo a la urgencia del cliente y timetable de actividades.',
-            'Pago conforme a fechas pactadas con el cliente.',
-            'Cada material será facturado en forma independiente conforme a su fecha de entrega.',
-            'Precios expresados en Moneda Nacional.'
-        ];
-        condicionesDefault.forEach(agregarCondicion);
-
-        // Iniciar con una partida
-        agregarPartida();
+    // Iniciar con una partida
+    agregarPartida();
     </script>
 </body>
 </html>
