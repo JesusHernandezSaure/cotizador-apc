@@ -79,6 +79,29 @@
 
         .footer { margin-top: 50px; text-align: center; font-size: 10px; color: #666; line-height: 1.3; }
 
+        /* ── Títulos de columna editables ── */
+        .th-input {
+            background: transparent;
+            color: white;
+            border: none;
+            border-bottom: 1px solid rgba(255,255,255,0.35);
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            width: 100%;
+            padding: 2px 0;
+            font-family: inherit;
+            cursor: text;
+            resize: none;
+            overflow: hidden;
+        }
+        .th-input:focus {
+            outline: none;
+            border-bottom: 1px solid rgba(255,255,255,0.85);
+            background: rgba(255,255,255,0.1);
+        }
+
         @media print {
             body { background-color: white; padding: 0; }
             .document-container { box-shadow: none; width: 100%; padding: 0; margin: 0; }
@@ -137,8 +160,8 @@
         </div>
 
         <div style="margin-bottom:20px; font-size:13px; line-height:2;">
-            <span style="font-weight:bold;">La presente tiene como fin cotizar a:</span>
-            <input type="text" placeholder="Nombre / razón social" style="display:inline; width:auto; min-width:260px; border:none; border-bottom:1px solid #999; border-radius:0; padding:2px 4px; font-size:13px; overflow:visible;">
+            <span style="font-weight:bold;">La presente tiene como fin cotizar a usted:</span><br>
+            <textarea rows="2" placeholder="Describe los alcances del servicio" oninput="autoResize(this)" style="width:100%; border:1px solid #ccc; border-radius:3px; padding:6px; font-size:13px; margin-top:4px;"></textarea>
             <br>
             <span style="font-weight:bold;">Se cotiza bajo las siguientes especificaciones:</span><br>
             <textarea rows="2" placeholder="Describe las especificaciones del proyecto..." oninput="autoResize(this)" style="width:100%; border:1px solid #ccc; border-radius:3px; padding:6px; font-size:13px; margin-top:4px;"></textarea>
@@ -237,19 +260,27 @@
     document.getElementById('fechaCot').valueAsDate = new Date();
 
     // ══════════════════════════════════════════════
-    //  PLANTILLA DE CELDAS
+    //  INSERTAR COLUMNA DINÁMICA
     // ══════════════════════════════════════════════
-    function crearCeldas() {
-        return [
-            '<td><input type="text" class="material-input" list="materiales-list" placeholder="Buscar material..."></td>',
-            '<td><textarea rows="2" oninput="autoResize(this)"></textarea></td>',
-            '<td><input type="number" class="p-cantidad" value="1" min="1" step="1" oninput="actualizarFilaAuto(this)"></td>',
-            '<td><input type="number" class="p-unitario" step="0.01" placeholder="0.00" oninput="actualizarFilaAuto(this)"></td>',
-            '<td><input type="number" class="p-total p-total-auto" step="0.01" placeholder="0.00" oninput="calcularTodo()"></td>',
-            '<td class="no-print" style="border:none;text-align:center;vertical-align:middle;">',
-            '  <button class="btn-danger" onclick="eliminarFila(this)">x</button>',
-            '</td>'
-        ].join('');
+    function agregarColumna(partidaId) {
+        const partida   = document.getElementById('partida-' + partidaId);
+        const headerRow = partida.querySelector('thead tr');
+        const tbody     = partida.querySelector('.cuerpo-tabla');
+        const ths       = Array.from(headerRow.querySelectorAll('th'));
+
+        // Nuevo <th> editable, insertado antes de TOTAL (penúltimo; el último es delete)
+        const newTh = document.createElement('th');
+        newTh.style.width  = '12%';
+        newTh.innerHTML    = '<input type="text" class="th-input" value="NUEVA COLUMNA" placeholder="Título...">';
+        headerRow.insertBefore(newTh, ths[ths.length - 2]);
+
+        // Nuevo <td> en cada fila existente (antes de TOTAL, segundo al último)
+        tbody.querySelectorAll('tr').forEach(row => {
+            const tds   = Array.from(row.querySelectorAll('td'));
+            const newTd = document.createElement('td');
+            newTd.innerHTML = '<input type="text" placeholder="">';
+            row.insertBefore(newTd, tds[tds.length - 2]);
+        });
     }
 
     // ══════════════════════════════════════════════
@@ -257,42 +288,62 @@
     // ══════════════════════════════════════════════
     function agregarPartida() {
         contadorPartidas++;
+        const id        = contadorPartidas;
         const container = document.getElementById('contenedorPartidas');
-        const div = document.createElement('div');
-        div.className = 'partida-container';
-        div.id = 'partida-' + contadorPartidas;
+        const div       = document.createElement('div');
+        div.className   = 'partida-container';
+        div.id          = 'partida-' + id;
         div.innerHTML =
             '<div class="partida-header">' +
-                '<input type="text" class="partida-title-input" placeholder="NOMBRE DE LA PARTIDA" value="PARTIDA ' + contadorPartidas + '. ">' +
-                '<button class="btn btn-danger no-print" onclick="eliminarPartida(' + contadorPartidas + ')">Eliminar Partida</button>' +
+                '<input type="text" class="partida-title-input" placeholder="NOMBRE DE LA PARTIDA" value="PARTIDA ' + id + '. ">' +
+                '<button class="btn btn-danger no-print" onclick="eliminarPartida(' + id + ')">Eliminar Partida</button>' +
+                '<button class="btn no-print" style="background:#6f42c1;font-size:11px;padding:5px 10px;" onclick="agregarColumna(' + id + ')">+ Columna</button>' +
             '</div>' +
             '<table>' +
                 '<thead><tr>' +
-                    '<th style="width:28%;">MATERIAL</th>' +
-                    '<th style="width:32%;">DESCRIPCIÓN</th>' +
-                    '<th style="width:8%;">CANT.</th>' +
-                    '<th style="width:16%;">P. UNITARIO</th>' +
-                    '<th style="width:16%;">TOTAL</th>' +
+                    '<th style="width:28%;"><input type="text" class="th-input" value="MATERIAL"></th>' +
+                    '<th style="width:32%;"><input type="text" class="th-input" value="DESCRIPCIÓN"></th>' +
+                    '<th style="width:8%;"><input type="text" class="th-input" value="CANT."></th>' +
+                    '<th style="width:16%;"><input type="text" class="th-input" value="P. UNITARIO"></th>' +
+                    '<th style="width:16%;"><input type="text" class="th-input" value="TOTAL"></th>' +
                     '<th class="no-print" style="width:30px;border:none;background:white;"></th>' +
                 '</tr></thead>' +
-                '<tbody class="cuerpo-tabla">' +
-                    '<tr class="td-inputs">' + crearCeldas() + '</tr>' +
-                '</tbody>' +
+                '<tbody class="cuerpo-tabla"></tbody>' +
             '</table>' +
             '<div class="no-print" style="text-align:right;">' +
-                '<button class="btn" style="font-size:11px;padding:5px 10px;" onclick="agregarFila(' + contadorPartidas + ')">+ Añadir Fila</button>' +
+                '<button class="btn" style="font-size:11px;padding:5px 10px;" onclick="agregarFila(' + id + ')">+ Añadir Fila</button>' +
             '</div>';
         container.appendChild(div);
-        div.querySelectorAll('textarea').forEach(autoResize);
+        agregarFila(id);
         calcularTodo();
     }
 
     function agregarFila(partidaId) {
-        const partida = document.getElementById('partida-' + partidaId);
-        const tbody = partida.querySelector('.cuerpo-tabla');
-        const tr = document.createElement('tr');
+        const partida   = document.getElementById('partida-' + partidaId);
+        const tbody     = partida.querySelector('.cuerpo-tabla');
+        const ths       = partida.querySelectorAll('thead th');
+        // 6 th fijos: MATERIAL, DESC, CANT, P.UNIT, TOTAL + delete(no-print)
+        // Columnas extra = las agregadas con "+ Columna"
+        const extraCols = Math.max(0, ths.length - 6);
+
+        const tr   = document.createElement('tr');
         tr.className = 'td-inputs';
-        tr.innerHTML = crearCeldas();
+
+        let html =
+            '<td><input type="text" class="material-input" list="materiales-list" placeholder="Buscar material..."></td>' +
+            '<td><textarea rows="2" oninput="autoResize(this)"></textarea></td>' +
+            '<td><input type="number" class="p-cantidad" value="1" min="1" step="1" oninput="actualizarFilaAuto(this)"></td>' +
+            '<td><input type="number" class="p-unitario" step="0.01" placeholder="0.00" oninput="actualizarFilaAuto(this)"></td>';
+
+        for (let i = 0; i < extraCols; i++) {
+            html += '<td><input type="text" placeholder=""></td>';
+        }
+
+        html +=
+            '<td><input type="number" class="p-total p-total-auto" step="0.01" placeholder="0.00" oninput="calcularTodo()"></td>' +
+            '<td class="no-print" style="border:none;text-align:center;vertical-align:middle;"><button class="btn-danger" onclick="eliminarFila(this)">x</button></td>';
+
+        tr.innerHTML = html;
         tbody.appendChild(tr);
         tr.querySelectorAll('textarea').forEach(autoResize);
     }
