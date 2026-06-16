@@ -526,7 +526,7 @@
     // ══════════════════════════════════════════════════════════════════
     //  CONFIGURACIÓN — reemplaza el valor con la URL de tu Apps Script
     // ══════════════════════════════════════════════════════════════════
-    const API_URL = ''; https://script.google.com/macros/s/AKfycbwAao6I08m4f1mk-zqKg_QEq2gywYbW9qRGlplvd-D3M3ZgPeK0ZxKvmoOaJ1JbkhV82A/exec
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwAao6I08m4f1mk-zqKg_QEq2gywYbW9qRGlplvd-D3M3ZgPeK0ZxKvmoOaJ1JbkhV82A/exec';
 
     // ── Serializar estado completo ────────────────────────────────────
     function obtenerEstado() {
@@ -626,8 +626,7 @@
         if (!API_URL) { alert('⚠️ La URL del servidor no está configurada.'); return; }
         const est = obtenerEstado();
         if (!est.folio || est.folio.trim() === 'APC-') {
-            alert('Asigna un folio antes de guardar.
-Ejemplo: APC-2026-001');
+            alert('Asigna un folio antes de guardar.\nEjemplo: APC-2026-001');
             return;
         }
         try {
