@@ -642,6 +642,26 @@
         }
     }
 
+    // ── JSONP: evita restricciones CORS en peticiones GET a Apps Script ──
+    function jsonpFetch(url) {
+        return new Promise(function(resolve, reject) {
+            const cbName = '__apc_' + Date.now();
+            window[cbName] = function(data) {
+                delete window[cbName];
+                if (script.parentNode) script.parentNode.removeChild(script);
+                resolve(data);
+            };
+            const script = document.createElement('script');
+            script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
+            script.onerror = function() {
+                delete window[cbName];
+                if (script.parentNode) script.parentNode.removeChild(script);
+                reject(new Error('Error de conexión con el servidor'));
+            };
+            document.head.appendChild(script);
+        });
+    }
+
     // ── Cargar desde Google Sheets ────────────────────────────────────
     function toggleCargador() {
         const p = document.getElementById('panelCarga');
@@ -654,8 +674,7 @@
         const folio = document.getElementById('inputBuscarFolio').value.trim();
         if (!folio) { alert('Escribe el folio a buscar.'); return; }
         try {
-            const res  = await fetch(API_URL + '?folio=' + encodeURIComponent(folio));
-            const json = await res.json();
+            const json = await jsonpFetch(API_URL + '?folio=' + encodeURIComponent(folio));
             if (json.success && json.data) {
                 restaurarEstado(json.data);
                 toggleCargador();
@@ -673,8 +692,7 @@
         const lista = document.getElementById('listaCotizaciones');
         lista.innerHTML = '<em style="color:#888;">Consultando...</em>';
         try {
-            const res  = await fetch(API_URL + '?action=list');
-            const json = await res.json();
+            const json = await jsonpFetch(API_URL + '?action=list');
             if (json.success && json.cotizaciones && json.cotizaciones.length) {
                 lista.innerHTML = json.cotizaciones.reverse().map(c =>
                     '<div onclick="seleccionarFolio(\''+c.folio+'\')" '
